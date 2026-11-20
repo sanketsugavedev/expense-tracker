@@ -1,0 +1,238 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expense Tracker</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+    <div class="container">
+
+        <!-- Header -->
+        <header class="header">
+            <div>
+                <h1>Expense Tracker</h1>
+                <p>Manage your money. Understand your spending.</p>
+            </div>
+            <span class="date" id="currentDate"></span>
+        </header>
+
+        <!-- Dashboard Summary -->
+        <section class="summary-grid">
+
+            <div class="summary-card">
+                <p>Total Income</p>
+                <h2 id="totalIncome">₹0.00</h2>
+                <span class="card-icon income-icon">↗</span>
+            </div>
+
+            <div class="summary-card">
+                <p>Total Expenses</p>
+                <h2 id="totalExpenses">₹0.00</h2>
+                <span class="card-icon expense-icon">↘</span>
+            </div>
+
+            <div class="summary-card">
+                <p>Available Balance</p>
+                <h2 id="balance">₹0.00</h2>
+                <span class="card-icon balance-icon">₹</span>
+            </div>
+
+        </section>
+
+        <!-- Main Content -->
+        <main class="main-grid">
+
+            <!-- Add Transaction -->
+            <section class="panel">
+                <h2>Add Transaction</h2>
+                <p class="subtitle">Record your income or expenses.</p>
+
+                <form id="transactionForm">
+
+                    <div class="form-group">
+                        <label for="title">Transaction Title</label>
+                        <input
+                            type="text"
+                            id="title"
+                            placeholder="e.g. Grocery Shopping"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="amount">Amount (₹)</label>
+                        <input
+                            type="number"
+                            id="amount"
+                            placeholder="Enter amount"
+                            min="0.01"
+                            step="0.01"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-row">
+
+                        <div class="form-group">
+                            <label for="type">Type</label>
+                            <select id="type" required>
+                                <option value="expense">Expense</option>
+                                <option value="income">Income</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="category">Category</label>
+                            <select id="category" required>
+                                <option value="">Select category</option>
+                                <option value="Food">Food</option>
+                                <option value="Shopping">Shopping</option>
+                                <option value="Transportation">Transportation</option>
+                                <option value="Housing">Housing</option>
+                                <option value="Entertainment">Entertainment</option>
+                                <option value="Healthcare">Healthcare</option>
+                                <option value="Education">Education</option>
+                                <option value="Salary">Salary</option>
+                                <option value="Business">Business</option>
+                                <option value="Investment">Investment</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+
+                    </div>
+
+                    <div class="form-group">
+                        <label for="date">Date</label>
+                        <input type="date" id="date" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="description">Description</label>
+                        <textarea
+                            id="description"
+                            placeholder="Add a note (optional)"
+                            rows="3"
+                        ></textarea>
+                    </div>
+
+                    <button type="submit" class="primary-btn" id="submitBtn">
+                        + Add Transaction
+                    </button>
+
+                    <p id="formMessage" class="form-message"></p>
+
+                </form>
+            </section>
+
+            <!-- Monthly Summary -->
+            <section class="panel monthly-panel">
+                <h2>Monthly Summary</h2>
+                <p class="subtitle">Your financial overview.</p>
+
+                <div class="monthly-info">
+                    <span>Current Month</span>
+                    <strong id="monthlyName">--</strong>
+                </div>
+
+                <div class="monthly-info">
+                    <span>Monthly Income</span>
+                    <strong id="monthlyIncome">₹0.00</strong>
+                </div>
+
+                <div class="monthly-info">
+                    <span>Monthly Expenses</span>
+                    <strong id="monthlyExpenses">₹0.00</strong>
+                </div>
+
+                <div class="monthly-info">
+                    <span>Monthly Savings</span>
+                    <strong id="monthlyBalance">₹0.00</strong>
+                </div>
+
+                <div class="chart-container">
+                    <canvas id="spendingChart"></canvas>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- Transaction History -->
+        <section class="panel transactions-panel">
+
+            <div class="section-header">
+                <div>
+                    <h2>Recent Transactions</h2>
+                    <p class="subtitle">View and manage your transactions.</p>
+                </div>
+            </div>
+
+            <!-- Filters -->
+            <div class="filters">
+
+                <select id="filterType">
+                    <option value="">All Types</option>
+                    <option value="income">Income</option>
+                    <option value="expense">Expense</option>
+                </select>
+
+                <select id="filterCategory">
+                    <option value="">All Categories</option>
+                    <option value="Food">Food</option>
+                    <option value="Shopping">Shopping</option>
+                    <option value="Transportation">Transportation</option>
+                    <option value="Housing">Housing</option>
+                    <option value="Entertainment">Entertainment</option>
+                    <option value="Healthcare">Healthcare</option>
+                    <option value="Education">Education</option>
+                    <option value="Salary">Salary</option>
+                    <option value="Business">Business</option>
+                    <option value="Investment">Investment</option>
+                    <option value="Other">Other</option>
+                </select>
+
+                <input type="date" id="filterStartDate" title="Start date">
+                <input type="date" id="filterEndDate" title="End date">
+
+                <button id="clearFilters" class="secondary-btn" type="button">
+                    Clear Filters
+                </button>
+
+            </div>
+
+            <!-- Transaction Table -->
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Category</th>
+                            <th>Date</th>
+                            <th>Type</th>
+                            <th>Amount</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="transactionList">
+                        <tr>
+                            <td colspan="6" class="empty-state">
+                                No transactions yet.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </section>
+
+    </div>
+
+    <script src="js/script.js"></script>
+
+</body>
+</html>
